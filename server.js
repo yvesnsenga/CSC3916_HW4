@@ -1,3 +1,4 @@
+
 var express = require('express');
 var bodyParser = require('body-parser');
 var passport = require('passport');
@@ -5,14 +6,14 @@ var authJwtController = require('./auth_jwt');
 var User = require('./Users');
 var jwt = require('jsonwebtoken');
 var Movie = require('./Movies');
-
+var Comment = require('./Comments');
+mongodb = require('mongodb');
+ObjectId = mongodb.ObjectId;
 var app = express();
 module.exports = app; // for testing
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-
 app.use(passport.initialize());
-
 var router = express.Router();
 
 router.route('/postjwt')
@@ -24,8 +25,7 @@ router.route('/postjwt')
                 res = res.type(req.get('Content-Type'));
             }
             res.send(req.body);
-        }
-    );
+    });
 
 router.route('/users/:userId')
     .get(authJwtController.isAuthenticated, function (req, res) {
@@ -34,7 +34,7 @@ router.route('/users/:userId')
             if (err) res.send(err);
             var userJson = JSON.stringify(user);
             // return that user
-            res.json(user);
+            res.json(userJson );
         });
     });
 
@@ -65,11 +65,11 @@ router.post('/signup', function(req, res) {
                 else
                     return res.send(err);
             }
-
             res.json({ success: true, message: 'User created!' });
         });
     }
 });
+
 router.route('/Movies')
     .post(authJwtController.isAuthenticated, function (req, res) {
         console.log(req.body);
@@ -89,59 +89,46 @@ router.route('/Movies')
         });
     });
 
-router.route('/Movies/:moviesid')
-    .get(authJwtController.isAuthenticated, function (req, res) {
-        var id = req.params.moviesid;
-        Movie.findById(id, function (err, movie) {
-            if (err) res.send(err);
-            var movieJson = JSON.stringify(movie);
-            res.json(movieJson);
-        })
-        });
+router.route('/Comments')
+    .post(authJwtController.isAuthenticated, function (req, res) {
+        console.log(req.body);
+        var comments = new Comment();
+        comments.title = req.body.title;
+        comments.comment = req.body.comment;
 
-router.route('/Movies')
-    .get(authJwtController.isAuthenticated, function (req, res) {
-    Movie.findOne({title : req.body.title}, function (err, movies) {
-            if (err) res.send(err);
-            res.json(movies);
-        })
-    });
-
-router.route('/MoviesAll')
-    .get(authJwtController.isAuthenticated, function (req, res) {
-    Movie.find(function (err, movies) {
-        if(err) res.send(err);
-        res.json(movies);
-    })
-    });
-router.route('/Movies/:id')
-    .put(authJwtController.isAuthenticated, function (req, res) {
-        var conditions = {_id: req.params.id};
-        Movie.updateOne(conditions, req.body)
-            .then(mov => {
-                if (!mov) {
-                    return res.status(404).end();
-                }
-                return res.status(200).json({msg: "Movie updated"})
-            })
-        .catch(err => next(err))
-    });
-
-router.route('/Movies')
-    .delete(authJwtController.isAuthenticated, function (req, res){
-        Movie.findOneAndDelete({title: req.body.title}, function (err, movie) {
-            if (err)
-            {
-                res.status(400).json({msg: err})
+        comments.save(function (err) {
+            if (err) {
+                if (err.Code == 11000)
+                    return res.JSON({success: false, message: 'A movie with that name already exists. '});
+                else
+                    return res.send(err);
             }
-            else if(movie == null)
+            res.json({success: true, message: 'Comment saved!'})
+        });
+    });
+
+router.route('/MoviesandComment')
+    .get(authJwtController.isAuthenticated, function getAll(req, res) {
+        Comment.aggregate([
             {
-                res.json({msg : "Movie not found"})
+                $lookup:
+                    {
+                        from: "Movie",
+                        localField: "title",
+                        foreignField: "title",
+                        as: "reviews"
+                    }
+            }
+        ]).exec(function(err, movies) {
+            if(err){
+                res.json("error" ,err);
             }
             else
-                res.json({msg :"The movie was deleted"})
-            })
-      });
+            {
+                res.json(movies);
+            }
+        });
+    });
 
 router.post('/signin', function(req, res) {
     var userNew = new User();
@@ -167,4 +154,4 @@ router.post('/signin', function(req, res) {
     });
 });
 app.use('/', router);
-app.listen(process.env.PORT || 7000);
+app.listen(process.env.PORT || 9000);

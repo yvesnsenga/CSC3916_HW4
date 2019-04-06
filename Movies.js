@@ -13,7 +13,7 @@ var MoviesSchema = new Schema({
         type: String,
         required: true,
         index: {unique: true}
-        },
+    },
     YearRelease:
         {
             type: Number,
