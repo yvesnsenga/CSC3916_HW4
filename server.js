@@ -1,4 +1,3 @@
-
 var express = require('express');
 var bodyParser = require('body-parser');
 var passport = require('passport');
@@ -95,7 +94,6 @@ router.route('/Comments')
         var comments = new Comment();
         comments.title = req.body.title;
         comments.comment = req.body.comment;
-
         comments.save(function (err) {
             if (err) {
                 if (err.Code == 11000)
@@ -108,24 +106,26 @@ router.route('/Comments')
     });
 
 router.route('/MoviesandComment')
-    .get(authJwtController.isAuthenticated, function getAll(req, res) {
-        Comment.aggregate([
+    .get(authJwtController.isAuthenticated, function (req, res) {
+        var data = req.body;
+        Movie.aggregate([
+           {"$match": {"title": data.title}},
             {
                 $lookup:
                     {
-                        from: "Movie",
-                        localField: "title",
-                        foreignField: "title",
-                        as: "reviews"
-                    }
-            }
-        ]).exec(function(err, movies) {
+                        from : 'Comment',
+                        localField: 'title',
+                        foreignField: 'title',
+                        as: 'reviews'
+                    },
+            },
+        ]).exec((err, review)=> {
             if(err){
-                res.json("error" ,err);
+                res.status('500').send(err);
             }
             else
             {
-                res.json(movies);
+                res.json(review)
             }
         });
     });
