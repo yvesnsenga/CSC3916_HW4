@@ -14,7 +14,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 var router = express.Router();
-require('.env').config();
 router.route('/postjwt')
     .post(authJwtController.isAuthenticated, function (req, res) {
             console.log(req.body);
@@ -108,7 +107,7 @@ router.route('/Comments')
 router.route('/MoviesandComment')
     .get(authJwtController.isAuthenticated, function (req, res) {
         var data = req.body;
-        Db.movies.aggregate([
+        DB.movies.aggregate([
            {"$match": {"title": data.title}
            },
             {
