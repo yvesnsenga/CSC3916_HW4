@@ -107,7 +107,7 @@ router.route('/Comments')
 router.route('/MoviesandComment')
     .get(authJwtController.isAuthenticated, function (req, res) {
         var data = req.body;
-        DB.movies.aggregate([
+        Movie.aggregate([
            {"$match": {"title": data.title}
            },
             {
