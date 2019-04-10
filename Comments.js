@@ -11,10 +11,18 @@ var CommentSchema = new Schema({
     },
     title: {
         type: String,
-        required: true,
-        index: {unique: true}
+        required: true
     },
-
+    rate: {
+       type: Number,
+        enum:['1', '2', '3', '4', '5'],
+        required: true
+    },
+    user:{
+       type: String,
+        required: true,
+        index:{unique:true}
+    }
 });
 // return the model
 module.exports = mongoose.model('Comments', CommentSchema);
