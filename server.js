@@ -141,21 +141,29 @@ router.route('/Movies')
 
 router.route('/Comments')
     .post(authJwtController.isAuthenticated, function (req, res) {
-
-        console.log(req.body);
-        var comments = new Comment();
-        comments.title = req.body.title;
-        comments.comment = req.body.comment;
-        comments.user = req.body.user;
-        comments.rate = req.body.rate;
-        comments.save(function (err) {
-            if (err) {
-                if (err.Code == 11000)
-                    return res.JSON({success: false, message: 'You have already commented on this movie!'});
-                else
-                    return res.send(err);
+        var movieId = req.body.movieid;
+        Movie.findById(movieId, function (err, movieReviews) {
+            if(err){
+                res.json({msg: "The is not a movie with this name in the database.\n"});
             }
-            res.json({success: true, message: 'You comment was successfully saved!'})
+            if(movieReviews)
+            {
+                console.log(req.body);
+                var comments = new Comment();
+                comments.title = req.body.movieid;
+                comments.comment = req.body.review;
+                comments.user = req.body.user;
+                comments.rate = req.body.rating;
+                comments.save(function (err) {
+                    if (err) {
+                        if (err.Code == 11000)
+                            return res.JSON({success: false, message: 'You have already commented on this movie!'});
+                        else
+                            return res.send(err);
+                    }
+                    res.json({success: true, message: 'You comment was successfully saved!'})
+                });
+            }
         });
     });
 
