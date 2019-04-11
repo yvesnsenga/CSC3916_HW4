@@ -8,21 +8,22 @@ var CommentSchema = new Schema({
    comment: {
         type: String,
         required: true,
+        unique: false
     },
     title: {
         type: String,
-        required: true,
-        index: {unique: false}
+         unique:false
     },
     rate: {
        type: Number,
         enum:['1', '2', '3', '4', '5'],
-        required: true
+        required: true,
+        unique:false
     },
     user:{
        type: String,
         required: true,
-        index:{unique:true}
+        unique: true
     }
 });
 // return the model
