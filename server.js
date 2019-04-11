@@ -87,7 +87,7 @@ router.route('/Movies')
 
 router.route('/MoviesAll')
     .get(authJwtController.isAuthenticated, function (req, res) {
-        Movie.find(function (err, movies) {
+        Movie.findAll(function (err, movies) {
             if(err) res.send(err);
             res.json(movies);
         })
@@ -142,7 +142,7 @@ router.route('/Movies')
 router.route('/Comments')
     .post(authJwtController.isAuthenticated, function (req, res) {
         var movie = req.body.movieName;
-        Movie.find(movie, function (err, movieReviews) {
+        Movie.findOne(movie, function (err, movieReviews) {
             if(err){
                 res.json({msg: "The is not a movie with this name in the database.\n"});
             }
