@@ -141,8 +141,8 @@ router.route('/Movies')
 
 router.route('/Comments')
     .post(authJwtController.isAuthenticated, function (req, res) {
-        var movieId = req.body.movieid;
-        Movie.findById(movieId, function (err, movieReviews) {
+        var movie = req.body.movieName;
+        Movie.find(movie, function (err, movieReviews) {
             if(err){
                 res.json({msg: "The is not a movie with this name in the database.\n"});
             }
@@ -150,7 +150,7 @@ router.route('/Comments')
             {
                 console.log(req.body);
                 var comments = new Comment();
-                comments.title = req.body.movieid;
+                comments.title = req.body.movie;
                 comments.comment = req.body.review;
                 comments.user = req.body.user;
                 comments.rate = req.body.rating;

@@ -11,7 +11,8 @@ var CommentSchema = new Schema({
     },
     title: {
         type: String,
-        required: true
+        required: true,
+        index: {unique: false}
     },
     rate: {
        type: Number,
