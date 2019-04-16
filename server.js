@@ -143,7 +143,7 @@ router.route('/Comments')
         const token = usertoken.split(' ');
         const decoded = jwt.verify(token[1], process.env.SECRET_KEY);
             var Mymovie = req.body.movie;
-            Movie.find( function (err, movieReviews) {
+            Comment.find(function (err, movieReviews) {
                 if (err) {
                     res.json({msg: "There is not a movie with this name in the database."});
                 }
@@ -167,7 +167,7 @@ router.route('/Comments')
             });
         });
 
-        router.route('/MoviesandComment')
+ router.route('/MoviesandComment')
             .get(authJwtController.isAuthenticated, function (req, res) {
                 var data = req.body;
                 Movie.aggregate([
