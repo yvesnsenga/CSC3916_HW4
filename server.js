@@ -87,7 +87,7 @@ router.route('/Movies')
 
 router.route('/MoviesAll')
     .get(authJwtController.isAuthenticated, function (req, res) {
-        Movie.findAll(function (err, movies) {
+        Movie.find(function (err, movies) {
             if(err) res.send(err);
             res.json(movies);
         })
@@ -104,7 +104,6 @@ router.route('/Movies/:id')
             })
             .catch(err => next(err))
     });
-
 router.route('/Movies')
     .delete(authJwtController.isAuthenticated, function (req, res){
         Movie.findOneAndDelete({title: req.body.title}, function (err, movie) {
@@ -138,70 +137,67 @@ router.route('/Movies')
             res.json({success: true, message: 'Movie saved!'})
         });
     });
-
 router.route('/Comments')
     .post(authJwtController.isAuthenticated, function (req, res) {
-        var movie = req.body.movie;
-        Movie.find(movie, function (err, movieReviews) {
-            if(err){
-                res.json({msg: "There is not a movie with this name in the database.\n"});
-            }
-            if(movieReviews)
-            {
-                console.log(req.body);
-                var comments = new Comment();
-                comments.title = req.body.movie;
-                comments.comment = req.body.review;
-                comments.user = req.body.user;
-                comments.rate = req.body.rating;
-                comments.save(function (err) {
-                    if (err) {
-                        if (err.Code == 11000)
-                            return res.JSON({success: false, message: 'You have already commented on this movie!'});
-                        else
-                            return res.send(err);
-                    }
-                    res.json({success: true, message: 'You comment was successfully saved!'})
-                });
-            }
+        const usertoken = req.headers.authorization;
+        const token = usertoken.split(' ');
+        const decoded = jwt.verify(token[1], process.env.SECRET_KEY);
+            var Mymovie = req.body.movie;
+            Movie.find( function (err, movieReviews) {
+                if (err) {
+                    res.json({msg: "There is not a movie with this name in the database."});
+                }
+                if (movieReviews) {
+                    console.log(req.body);
+                    var comments = new Comment();
+                    comments.user = decoded.username;
+                    comments.title = req.body.movie;
+                    comments.comment = req.body.review;
+                    comments.rate = req.body.rating;
+                    comments.save(function (err) {
+                        if (err) {
+                            if (err.Code == 11000)
+                                return res.JSON({success: false, message: 'You have already commented on this movie!'});
+                            else
+                                return res.send(err);
+                        }
+                        res.json({success: true, message: 'You comment was successfully saved!'})
+                    });
+                }
+            });
         });
-    });
 
-router.route('/MoviesandComment')
-    .get(authJwtController.isAuthenticated, function (req, res) {
-        var data = req.body;
-        Movie.aggregate([
-           {"$match": {"title": data.title}
-           },
-            {
-                $lookup:
+        router.route('/MoviesandComment')
+            .get(authJwtController.isAuthenticated, function (req, res) {
+                var data = req.body;
+                Movie.aggregate([
                     {
-                        from : 'comments',
-                        localField: 'title',
-                        foreignField: 'title',
-                        as: 'reviews'
+                        "$match": {"title": data.title}
                     },
-            },
-        ]).exec((err, review)=> {
-            if(err){
-                res.status('500').send(err);
-            }
-            else
-            {
-                res.json(review)
-            }
-        });
-    });
-
+                    {
+                        $lookup:
+                            {
+                                from: 'comments',
+                                localField: 'title',
+                                foreignField: 'title',
+                                as: 'reviews'
+                            },
+                    },
+                ]).exec((err, review) => {
+                    if (err) {
+                        res.status('500').send(err);
+                    } else {
+                        res.json(review)
+                    }
+                });
+            });
 router.post('/signin', function(req, res) {
     var userNew = new User();
     userNew.name = req.body.name;
     userNew.username = req.body.username;
     userNew.password = req.body.password;
-
     User.findOne({username: userNew.username}).select('name username password').exec(function (err, user) {
         if (err) res.send(err);
-
         user.comparePassword(userNew.password, function (isMatch) {
             if (isMatch) {
                 var userToken = {id: user._id, username: user.username};
