@@ -37,7 +37,7 @@ app.route('/users/:userId')
             if (err) res.send(err);
             var userJson = JSON.stringify(user);
             // return that user
-            res.json(user);
+            res.json(userJson);
         });
     });
 
@@ -97,7 +97,7 @@ app.route('/Movies')
     });
 
 
-app.route('/Movies/:moviesid')
+app.route('/movies/:moviesid')
     .get(authJwtController.isAuthenticated, function (req, res) {
         var id = req.params.moviesid;
         Movie.findById(id, function (err, movie) {
@@ -245,6 +245,16 @@ app.route('/movies')
                     res.json(review)
                 }
             });
+        }else {
+            Movie.find(function (err, movies) {
+                if ( err)
+                {
+                    res.send(err);
+                }
+                else {
+                    res.json(movies)
+                }
+            })
         }
     });
 
