@@ -24,7 +24,7 @@ var CommentSchema = new Schema({
     user:{
        type: String,
         required: true,
-        unique: true
+        unique: false
     }
 });
 // return the model
