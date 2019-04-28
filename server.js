@@ -255,8 +255,9 @@ app.route('/movie')
     })*/
     .get(authJwtController.isAuthenticated, function (req, res) {
         Movie.find(function (err, movie) {
+            var needReview = req.query.reviews;
             if (err) res.json({message: "Not saved", error: err});
-            if (req.query.reviews === 'true') {
+            if (needReview === "true") {
                 Movie.aggregate([
                     {
                         $lookup: {
