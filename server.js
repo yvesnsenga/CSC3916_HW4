@@ -84,6 +84,8 @@ app.route('/Movies')
         movies.YearRelease = req.body.YearRelease;
         movies.genre = req.body.genre;
         movies.Actors = req.body.Actors;
+        movies.ImageUrl = req.body.ImageUrl;
+        movies.averageRating = req.body.averageRating;
         movies.save(function (err) {
             if (err) {
                 if (err.Code == 11000)
@@ -218,9 +220,8 @@ app.post('/signin', function(req, res) {
     });
 });
 
-
 app.route('/movie')
-    /*.get(authJwtController.isAuthenticated, function (req, res) {
+    .get(authJwtController.isAuthenticated, function (req, res) {
         let data = req.body;
         if (req.query.reviews === 'true') {
             Movie.aggregate([
@@ -252,8 +253,9 @@ app.route('/movie')
                 }
             })
         }
-    })*/
-    .get(authJwtController.isAuthenticated, function (req, res) {
+    });
+    /*
+    get(authJwtController.isAuthenticated, function (req, res) {
         Movie.find(function (err, movie) {
             var needReview = req.query.reviews;
             if (err) res.json({message: "Not saved", error: err});
@@ -328,6 +330,6 @@ app.route('/movie/:movieid')
             }
         })
     });
-
+*/
 app.use('/', router);
 app.listen(process.env.PORT || 9000);
