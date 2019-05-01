@@ -220,7 +220,7 @@ app.post('/signin', function(req, res) {
     });
 });
 
-app.route('/movie')
+/*app.route('/movie')
     .get(authJwtController.isAuthenticated, function (req, res) {
         let data = req.body;
         if (req.query.reviews === 'true') {
@@ -254,40 +254,45 @@ app.route('/movie')
             })
         }
     });
-
+*/
 app.route('/movies/:movieName')
     .get(authJwtController.isAuthenticated, function (req, res) {
         let data = req.params.movieName;
-        if (req.query.reviews === 'true') {
-            Movie.aggregate([
-                {
-                    "$match": {"title": data}
-                },
-                {
-                    $lookup:
+        //if (req.query.reviews === 'true') {
+            Movie.findOne(data, function () {
+                if (err) {
+                    res.json({message: "Movie not found."});
+                } else if (req.query.reviews === 'true') {
+                    Movie.aggregate([
                         {
-                            from: 'comments',
-                            localField: 'title',
-                            foreignField: 'title',
-                            as: 'reviews'
+                            "$match": {"title": data}
                         },
-                },
-            ]).exec((err, review) => {
-                if (err) {
-                    res.status('500').send(err);
+                        {
+                            $lookup:
+                                {
+                                    from: 'comments',
+                                    localField: 'title',
+                                    foreignField: 'title',
+                                    as: 'reviews'
+                                },
+                        },
+                    ]).exec((err, review) => {
+                        if (err) {
+                            res.status('500').send(err);
+                        } else {
+                            res.json(review)
+                        }
+                    })
                 } else {
-                    res.json(review)
-                }
-            });
-        } else {
-            Movie.find(function (err, movies) {
-                if (err) {
-                    res.send(err);
-                } else {
-                    res.json(movies)
+                    Movie.find(function (err, movies) {
+                        if (err) {
+                            res.send(err);
+                        } else {
+                            res.json(movies)
+                        }
+                    })
                 }
             })
-        }
     });
 
 /*app.route('/movie/:movieId')
