@@ -222,6 +222,37 @@ app.post('/signin', function(req, res) {
 
 app.route('/movie')
     .get(authJwtController.isAuthenticated, function (req, res) {
+        Movie.find(function (err, movie) {
+            if(err) res.json({message: "Ooops, something is wrong. Read error. \n", error: err});
+            if (req.query.reviews === 'true'){
+                Movie.aggregate([
+                    {
+                        $lookup:{
+                            from: 'comments',
+                            localField: 'title',
+                            foreignField: 'title',
+                            as: 'Reviews'
+                        }
+                    },
+                    {
+                        $sort : { averageRating : -1} }
+
+                ],function(err, data) {
+
+                    if(err){
+                        res.send(err);
+                    }else{
+                        res.json(data);
+                    }
+                });
+            } else {
+                res.json(movie);
+            }
+        })
+    });
+
+app.route('/movie')
+    .get(authJwtController.isAuthenticated, function (req, res) {
         let data = req.body;
         if (req.query.reviews === 'true') {
             Movie.aggregate([
