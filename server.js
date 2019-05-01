@@ -254,45 +254,43 @@ app.route('/movie')
             })
         }
     });
-    /*
-    get(authJwtController.isAuthenticated, function (req, res) {
-        Movie.find(function (err, movie) {
-            var needReview = req.query.reviews;
-            if (err) res.json({message: "Not saved", error: err});
-            if (needReview === "true") {
-                Movie.aggregate([
-                    {
-                        $lookup: {
+
+app.route('/movies/:movieName')
+    .get(authJwtController.isAuthenticated, function (req, res) {
+        let data = req.params.movieName;
+        if (req.query.reviews === 'true') {
+            Movie.aggregate([
+                {
+                    "$match": {"title": data}
+                },
+                {
+                    $lookup:
+                        {
                             from: 'comments',
                             localField: 'title',
                             foreignField: 'title',
-                            as: 'Reviews'
-                        }
-                    },
-                    {
-                        $sort: {averageRating: -1}
-                    }
-
-                ]).exec((err, review) => {
-                    if (err) {
-                        res.status('500').send(err);
-                    } else {
-                        res.json(review)
-                    }
-                });
-            } else {
-                Movie.find(function (err, movies) {
-                    if (err) {
-                        res.send(err);
-                    } else {
-                        res.json(movies)
-                    }
-                })
-            }
-        })
+                            as: 'reviews'
+                        },
+                },
+            ]).exec((err, review) => {
+                if (err) {
+                    res.status('500').send(err);
+                } else {
+                    res.json(review)
+                }
+            });
+        } else {
+            Movie.find(function (err, movies) {
+                if (err) {
+                    res.send(err);
+                } else {
+                    res.json(movies)
+                }
+            })
+        }
     });
 
-app.route('/movie/:movieid')
+/*app.route('/movie/:movieId')
     .get(authJwtController.isAuthenticated, function (req, res) {
         var id = req.params.movieid;
         var needReview = req.query.comment;
@@ -316,20 +314,23 @@ app.route('/movie/:movieid')
                                 as: 'Reviews'
                             }
                         }
-                    ],function(err, data) {
-
-                        if(err){
-                            res.send(err);
-                        }else{
-                            res.json(data);
+                    ]).exec((err, review) => {
+                        if (err) {
+                            res.status('500').send(err);
+                        } else {
+                            res.json(review)
                         }
                     });
                 } else {
-                    res.json(movie);
+                    Movie.find(function (err, movies) {
+                        if (err) {
+                            res.send(err);
+                        } else {
+                            res.json(movies)
+                        }
+                    })
                 }
-            }
-        })
     });
-*/
+});*/
 app.use('/', router);
 app.listen(process.env.PORT || 9000);
