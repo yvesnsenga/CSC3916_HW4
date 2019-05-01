@@ -251,6 +251,8 @@ app.route('/movie')
         })
     });
 
+
+
 app.route('/movie')
     .get(authJwtController.isAuthenticated, function (req, res) {
         let data = req.body;
@@ -286,87 +288,43 @@ app.route('/movie')
         }
     });
 
-app.route('/movies/:movieName')
-    .get(authJwtController.isAuthenticated, function (req, res) {
-        let data = req.params.movieName;
-        //if (req.query.reviews === 'true') {
-            Movie.findOne(data, function () {
-                if (err) {
-                    res.json({message: "Movie not found."});
-                } else if (req.query.reviews === 'true') {
-                    Movie.aggregate([
-                        {
-                            "$match": {"title": data}
-                        },
-                        {
-                            $lookup:
-                                {
-                                    from: 'comments',
-                                    localField: 'title',
-                                    foreignField: 'title',
-                                    as: 'reviews'
-                                },
-                        },
-                    ]).exec((err, review) => {
-                        if (err) {
-                            res.status('500').send(err);
-                        } else {
-                            res.json(review)
-                        }
-                    })
-                } else {
-                    Movie.find(function (err, movies) {
-                        if (err) {
-                            res.send(err);
-                        } else {
-                            res.json(movies)
-                        }
-                    })
-                }
-            })
-    });
-
-/*app.route('/movie/:movieId')
+router.route('/movie/:movieid')
     .get(authJwtController.isAuthenticated, function (req, res) {
         var id = req.params.movieid;
-        var needReview = req.query.comment;
         Movie.findById(id, function (err, movie) {
             if (err) {
-                res.json({message: "Movie not found."});
+                res.json({message: "Error 🚨 Movie not found.\n"});
             }
             else {
-                if (needReview === "true"){
+                if (req.query.reviews === 'true'){
 
                     Movie.aggregate([
                         {
-                            $match: {'_id': id.id}
+                            $match: {'_id': mongoose.Types.ObjectId(req.query.movieid)}
                         },
 
                         {
                             $lookup:{
-                                from: 'comments',
+                                from: 'reviews',
                                 localField: 'title',
                                 foreignField: 'title',
                                 as: 'Reviews'
                             }
                         }
-                    ]).exec((err, review) => {
-                        if (err) {
-                            res.status('500').send(err);
-                        } else {
-                            res.json(review)
+                    ],function(err, data) {
+
+                        if(err){
+                            res.send(err);
+                        }else{
+                            res.json(data);
                         }
                     });
                 } else {
-                    Movie.find(function (err, movies) {
-                        if (err) {
-                            res.send(err);
-                        } else {
-                            res.json(movies)
-                        }
-                    })
+                    res.json(movie);
                 }
+            }
+        })
     });
-});*/
+
 app.use('/', router);
 app.listen(process.env.PORT || 9000);
