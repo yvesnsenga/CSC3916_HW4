@@ -127,7 +127,7 @@ app.route('/comments')
     });
 
 
-app.route('/Comments')
+app.route('/comments')
     .post(authJwtController.isAuthenticated, function (req, res) {
         const usertoken = req.headers.authorization;
         const token = usertoken.split(' ');
@@ -220,7 +220,7 @@ app.post('/signin', function(req, res) {
     });
 });
 
-/*app.route('/movie')
+app.route('/movie')
     .get(authJwtController.isAuthenticated, function (req, res) {
         let data = req.body;
         if (req.query.reviews === 'true') {
@@ -254,7 +254,7 @@ app.post('/signin', function(req, res) {
             })
         }
     });
-*/
+
 app.route('/movies/:movieName')
     .get(authJwtController.isAuthenticated, function (req, res) {
         let data = req.params.movieName;
