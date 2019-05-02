@@ -223,7 +223,7 @@ app.post('/signin', function(req, res) {
 app.route('/movie')
     .get(authJwtController.isAuthenticated, function (req, res) {
         Movie.find(function (err, movie) {
-            if(err) res.json({message: "Ooops, something is wrong. Read error. \n", error: err});
+            if(err) res.json({message: "Something broke", error: err});
             if (req.query.reviews === 'true'){
                 Movie.aggregate([
                     {
