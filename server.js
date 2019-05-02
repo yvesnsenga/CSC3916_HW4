@@ -253,7 +253,7 @@ app.route('/movie')
 
 
 
-app.route('/movie')
+/*app.route('/movie')
     .get(authJwtController.isAuthenticated, function (req, res) {
         let data = req.body;
         if (req.query.reviews === 'true') {
@@ -286,26 +286,26 @@ app.route('/movie')
                 }
             })
         }
-    });
+    });*/
 
 router.route('/movie/:movieid')
     .get(authJwtController.isAuthenticated, function (req, res) {
         var id = req.params.movieid;
         Movie.findById(id, function (err, movie) {
             if (err) {
-                res.json({message: "Error 🚨 Movie not found.\n"});
+                res.json({message: "Movie not found"});
             }
             else {
                 if (req.query.reviews === 'true'){
 
                     Movie.aggregate([
                         {
-                            $match: {'_id': mongoose.Types.ObjectId(req.query.movieid)}
+                            $match: {'title': req.query.title}
                         },
 
                         {
                             $lookup:{
-                                from: 'reviews',
+                                from: 'comments',
                                 localField: 'title',
                                 foreignField: 'title',
                                 as: 'Reviews'
