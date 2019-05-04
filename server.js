@@ -86,6 +86,7 @@ app.route('/Movies')
         movies.Actors = req.body.Actors;
         movies.ImageUrl = req.body.ImageUrl;
         movies.averageRating = req.body.averageRating;
+        movies.releaseDate = req.body.release;
         movies.save(function (err) {
             if (err) {
                 if (err.Code == 11000)
@@ -143,7 +144,6 @@ app.route('/comments')
                 comments.title = req.body.movie;
                 comments.comment = req.body.review;
                 comments.rate = req.body.rating;
-                comments.releaseDate = req.body.release;
                 comments.save(function (err) {
                     if (err) {
                         if (err.Code == 11000)
