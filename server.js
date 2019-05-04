@@ -259,15 +259,12 @@ app.route('/movie')
         if (req.query.reviews === 'true') {
             Movie.aggregate([
                 {
-                    "$match": {"title": data.title}
-                },
-                {
                     $lookup:
                         {
                             from: 'comments',
                             localField: 'title',
                             foreignField: 'title',
-                            as: 'reviews'
+                            as: 'Reviews'
                         },
                 },
             ]).exec((err, review) => {
@@ -278,11 +275,11 @@ app.route('/movie')
                 }
             });
         } else {
-            Movie.find(function (err, movies) {
+            Movie.find(function (err, movie) {
                 if (err) {
                     res.send(err);
                 } else {
-                    res.json(movies)
+                    res.json(movie)
                 }
             })
         }
