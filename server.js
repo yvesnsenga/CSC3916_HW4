@@ -86,7 +86,6 @@ app.route('/Movies')
         movies.Actors = req.body.Actors;
         movies.ImageUrl = req.body.ImageUrl;
         movies.averageRating = req.body.averageRating;
-        movies.releaseDate = req.body.release;
         movies.save(function (err) {
             if (err) {
                 if (err.Code == 11000)

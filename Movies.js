@@ -36,11 +36,6 @@ var MoviesSchema = new Schema({
         type: Number,
         required: false
     },
-    releaseDate:{
-        type: Date,
-        require: false,
-        default: Date.now()
-    }
 });
 // return the model
 module.exports = mongoose.model('Movies', MoviesSchema);
