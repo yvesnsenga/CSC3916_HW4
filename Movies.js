@@ -35,6 +35,11 @@ var MoviesSchema = new Schema({
     averageRating: {
         type: Number,
         required: false
+    },
+    releaseDate:{
+        type: Date,
+        require: false,
+        default: Date.now()
     }
 });
 // return the model

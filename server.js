@@ -132,7 +132,6 @@ app.route('/comments')
         const usertoken = req.headers.authorization;
         const token = usertoken.split(' ');
         const decoded = jwt.verify(token[1], process.env.SECRET_KEY);
-        var Mymovie = req.body.movie;
         Comment.find(function (err, movieReviews) {
             if (err) {
                 res.json({msg: "There is not a movie with this name in the database."});
@@ -144,6 +143,7 @@ app.route('/comments')
                 comments.title = req.body.movie;
                 comments.comment = req.body.review;
                 comments.rate = req.body.rating;
+                comments.releaseDate = req.body.release;
                 comments.save(function (err) {
                     if (err) {
                         if (err.Code == 11000)
