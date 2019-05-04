@@ -81,11 +81,11 @@ app.route('/Movies')
         console.log(req.body);
         var movies = new Movie();
         movies.title = req.body.title;
-        movies.YearRelease = req.body.YearRelease;
+        movies.YearRelease = req.body.release;
         movies.genre = req.body.genre;
         movies.Actors = req.body.Actors;
         movies.ImageUrl = req.body.ImageUrl;
-        movies.averageRating = req.body.averageRating;
+        movies.averageRating = req.body.average;
         movies.save(function (err) {
             if (err) {
                 if (err.Code == 11000)
