@@ -220,7 +220,7 @@ app.post('/signin', function(req, res) {
     });
 });
 
-app.route('/movie')
+/*app.route('/movie')
     .get(authJwtController.isAuthenticated, function (req, res) {
         Movie.find(function (err, movie) {
             if(err) res.json({message: "Something broke", error: err});
@@ -249,11 +249,11 @@ app.route('/movie')
                 res.json(movie);
             }
         })
-    });
+    });*/
 
 
 
-/*app.route('/movie')
+app.route('/movie')
     .get(authJwtController.isAuthenticated, function (req, res) {
         let data = req.body;
         if (req.query.reviews === 'true') {
@@ -286,7 +286,7 @@ app.route('/movie')
                 }
             })
         }
-    });*/
+    });
 
 app.route('/movie/:movieid')
     .get(authJwtController.isAuthenticated, function (req, res) {
