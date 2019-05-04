@@ -285,7 +285,5 @@ app.route('/movie/:movieid')
         })
     });
 
-
-
-app.use('/', router)
+app.use('/', router);
 app.listen(process.env.PORT || 9000);
